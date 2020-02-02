@@ -1,0 +1,22 @@
+include blocks
+
+block variables
+  -
+    let isHomePage = false;
+
+doctype html
+html(lang="ru")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    title #{pageTitle}
+    link(rel="stylesheet" href="css/style.min.css")
+
+  body
+
+    +header()
+
+    main
+      block content
+
+    script(src='js/main.js')

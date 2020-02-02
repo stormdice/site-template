@@ -1,0 +1,31 @@
+body {
+  padding: 0;
+  margin: 0;
+
+  // улучшение отображения шрифтов на Mac
+  -webkit-font-smoothing: antialiased;
+
+  // отключение увеличения шрифта в ландшафтном режиме на iOS
+  -webkit-text-size-adjust: 100%;
+
+  // отключение подсветки элементов при тапе на iOS
+  -webkit-tap-highlight-color: transparent;
+}
+
+// дополнительный фикс шрифтов на Mac для Firefox
+@-moz-document url-prefix() {
+  body {
+    font-weight: 200;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+// IE fix
+main {
+  display: block;
+}
+
+// скрытие крестика в IE
+input::-ms-clear {
+  display: none;
+}
