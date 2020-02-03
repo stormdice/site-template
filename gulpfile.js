@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 
 const {
-  src, dest, series, watch,
+  src, dest, series, watch, parallel
 } = gulp;
 
 const plumber = require('gulp-plumber');
@@ -50,8 +50,9 @@ const styles = () => src('src/sass/style.scss')
   .pipe(browserSync.stream());
 
 const scripts = () => src('src/js/*.js')
+  .pipe(plumber())
   .pipe(webpack({
-    mode: 'development',
+    mode: 'production',
     output: {
       filename: 'main.js',
     },
@@ -70,7 +71,8 @@ const scripts = () => src('src/js/*.js')
       ],
     },
   }))
-  .pipe(dest('build/js/'));
+  .pipe(dest('build/js/'))
+  .pipe(browserSync.stream());
 
 const createWebp = () => src('source/img/content/**/*.{png,jpg}')
   .pipe(webp({ quality: 90 }))
@@ -95,13 +97,13 @@ const browserSyncServer = () => {
     ui: false,
   });
 
-  watch('src/sass/**/*.{scss,sass}', series(styles));
+  watch('src/sass/**/*.{scss,sass}', styles);
   watch('src/pug/**/*.pug', series(buildHtml, reload));
   watch('src/img/sprite/*.svg', series(sprite, reload));
-  watch('src/js/**', series(scripts, reload));
+  watch('src/js/**', scripts);
 };
 
-const build = series(clean, copyAssets, sprite, styles, scripts, buildHtml);
+const build = series(clean, parallel(copyAssets, sprite, styles, scripts, buildHtml));
 const start = series(build, browserSyncServer);
 
 exports.createWebp = createWebp;
