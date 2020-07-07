@@ -1,8 +1,6 @@
 const gulp = require('gulp');
 
-const {
-  src, dest, series, watch, parallel
-} = gulp;
+const { src, dest, series, watch, parallel } = gulp;
 
 const plumber = require('gulp-plumber');
 const sourcemap = require('gulp-sourcemaps');
@@ -21,65 +19,81 @@ const data = require('gulp-data');
 const beautify = require('gulp-jsbeautifier');
 const fs = require('fs');
 const svgstore = require('gulp-svgstore');
+const validator = require('gulp-html');
 
-const sprite = () => src('src/img/sprite/*.svg')
-  .pipe(svgstore({ inlineSvg: true }))
-  .pipe(rename('sprite.svg'))
-  .pipe(dest('build/img'));
+const nuHtmlChecker = () => {
+  return gulp.src('build/*.html').pipe(validator());
+};
 
-const buildHtml = () => src('src/pug/pages/*.pug')
-  .pipe(plumber())
-  .pipe(pugLinter({ reporter: 'default' }))
-  .pipe(data(() => JSON.parse(fs.readFileSync('data.json'))))
-  .pipe(pug())
-  .pipe(beautify({
-    indent_char: '\t',
-    indent_size: 1,
-  }))
-  .pipe(dest('build/'));
+const sprite = () =>
+  src('src/img/sprite/*.svg')
+    .pipe(svgstore({ inlineSvg: true }))
+    .pipe(rename('sprite.svg'))
+    .pipe(dest('build/img'));
 
-const styles = () => src('src/sass/style.scss')
-  .pipe(plumber())
-  .pipe(sourcemap.init())
-  .pipe(sass())
-  .pipe(postcss([autoprefixer()]))
-  .pipe(csso())
-  .pipe(rename('style.min.css'))
-  .pipe(sourcemap.write('.'))
-  .pipe(dest('build/css'))
-  .pipe(browserSync.stream());
+const buildHtml = () =>
+  src('src/pug/pages/*.pug')
+    .pipe(plumber())
+    .pipe(pugLinter({ reporter: 'default' }))
+    .pipe(data(() => JSON.parse(fs.readFileSync('data.json'))))
+    .pipe(pug())
+    .pipe(
+      beautify({
+        indent_char: '\t',
+        indent_size: 1,
+      })
+    )
+    .pipe(dest('build/'));
 
-const scripts = () => src('src/js/*.js')
-  .pipe(plumber())
-  .pipe(webpack({
-    mode: 'production',
-    output: {
-      filename: 'main.js',
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env'],
-            },
-          },
+const styles = () =>
+  src('src/sass/style.scss')
+    .pipe(plumber())
+    .pipe(sourcemap.init())
+    .pipe(sass())
+    .pipe(postcss([autoprefixer()]))
+    .pipe(csso())
+    .pipe(rename('style.min.css'))
+    .pipe(sourcemap.write('.'))
+    .pipe(dest('build/css'))
+    .pipe(browserSync.stream());
+
+const scripts = () =>
+  src('src/js/main.js')
+    .pipe(plumber())
+    .pipe(
+      webpack({
+        mode: 'production',
+        output: {
+          filename: 'main.js',
         },
-      ],
-    },
-  }))
-  .pipe(dest('build/js/'))
-  .pipe(browserSync.stream());
+        module: {
+          rules: [
+            {
+              test: /\.js$/,
+              exclude: /node_modules/,
+              use: {
+                loader: 'babel-loader',
+                options: {
+                  presets: ['@babel/preset-env'],
+                },
+              },
+            },
+          ],
+        },
+      })
+    )
+    .pipe(dest('build/js/'))
+    .pipe(browserSync.stream());
 
-const createWebp = () => src('source/img/content/**/*.{png,jpg}')
-  .pipe(webp({ quality: 90 }))
-  .pipe(dest('build/img/content'));
+const createWebp = () =>
+  src('source/img/content/**/*.{png,jpg}')
+    .pipe(webp({ quality: 90 }))
+    .pipe(dest('build/img/content'));
 
-const copyAssets = () => src(['src/img/**', 'src/fonts/**/*.{woff,woff2}', 'src//*.ico'], { base: 'src' })
-  .pipe(dest('build'));
+const copyAssets = () =>
+  src(['src/img/**', 'src/fonts/**/*.{woff,woff2}', 'src//*.ico'], {
+    base: 'src',
+  }).pipe(dest('build'));
 
 const clean = () => del('build');
 
@@ -103,9 +117,14 @@ const browserSyncServer = () => {
   watch('src/js/**', scripts);
 };
 
-const build = series(clean, parallel(copyAssets, sprite, styles, scripts, buildHtml));
+const build = series(
+  clean,
+  parallel(copyAssets, sprite, styles, scripts, buildHtml)
+);
 const start = series(build, browserSyncServer);
 
 exports.createWebp = createWebp;
 exports.build = build;
 exports.start = start;
+exports.nuHtmlChecker = nuHtmlChecker;
+exports.createWebp = createWebp;
