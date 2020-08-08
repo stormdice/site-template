@@ -1,19 +1,8 @@
 const gulp = require('gulp');
 
-<<<<<<< HEAD
-const {
-  src,
-  dest,
-  series,
-  watch,
-  parallel,
-} = gulp;
-=======
 const { src, dest, series, watch, parallel } = gulp;
->>>>>>> 81f22698d987eea4de6e85434ac317e16c861a31
 
 const plumber = require('gulp-plumber');
-const sourcemap = require('gulp-sourcemaps');
 const sass = require('gulp-sass');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
@@ -58,12 +47,10 @@ const buildHtml = () =>
 const styles = () =>
   src('src/sass/style.scss')
     .pipe(plumber())
-    .pipe(sourcemap.init())
     .pipe(sass())
     .pipe(postcss([autoprefixer()]))
     .pipe(csso())
     .pipe(rename('style.min.css'))
-    .pipe(sourcemap.write('.'))
     .pipe(dest('build/css'))
     .pipe(browserSync.stream());
 
