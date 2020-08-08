@@ -37,6 +37,7 @@
     "gulp-sourcemaps": "2.6.5",
     "gulp-svgstore": "7.0.1",
     "gulp-webp": "4.0.1",
+    "jquery": "3.5.0",
     "stylelint": "13.0.0",
     "stylelint-config-htmlacademy": "0.1.4",
     "webpack-stream": "5.2.1"

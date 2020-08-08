@@ -1,7 +1,11 @@
 const gulp = require('gulp');
 
 const {
-  src, dest, series, watch, parallel
+  src,
+  dest,
+  series,
+  watch,
+  parallel,
 } = gulp;
 
 const plumber = require('gulp-plumber');
@@ -54,7 +58,7 @@ const scripts = () => src('src/js/*.js')
   .pipe(webpack({
     mode: 'production',
     output: {
-      filename: 'main.js',
+      filename: 'index.js',
     },
     module: {
       rules: [
@@ -69,6 +73,9 @@ const scripts = () => src('src/js/*.js')
           },
         },
       ],
+    },
+    externals: {
+      jquery: 'jQuery',
     },
   }))
   .pipe(dest('build/js/'))
